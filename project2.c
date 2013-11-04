@@ -8,7 +8,7 @@ void printMatrix(double *a, int row, int col) {
   int i, j;
   for (i = 0; i < row; i++) {
     for (j = 0; j < col; j++) 
-      printf("%10.6f ", a[i*col+j]);
+      printf("%15.10f ", a[i*col+j]);
     printf("\n");
   }
   return;
@@ -75,6 +75,7 @@ void dumb_solve(double *a, double *y, int n, double eps,
   *niter = 0;
   //double r = -0.5 / normal(a, n, n);
   //double r = -0.5;
+  double bbbb = 0;
   while (*niter < numit) {
     double *x_gradient = gradient(a, x, y, n);
     
@@ -89,13 +90,12 @@ void dumb_solve(double *a, double *y, int n, double eps,
       x_gradient[i] *= r;
     double *new_x = addition(x, x_gradient, n, 1);
     discreps[*niter] = normal(subtraction(multiply(a, x, n, n, 1), y, n, 1), n, 1);
-    memcpy(x, new_x, n*sizeof(double));
-    free(new_x);
     if (discreps[*niter] < eps)
       break;
+    memcpy(x, new_x, n*sizeof(double));
+    free(new_x);
     *niter += 1;
-
-    printf("Round %d: r = %lf\n", *niter, r);
+    //printf("Round %d: r = %lf\n", *niter, r);
     //printMatrix(x, n, 1);
     //getchar();
   }
@@ -117,7 +117,7 @@ void problem(int n) {
     y[i] = 1.0;
 
   int numit = 1000;
-  double eps = 10E-6;
+  double eps = 1E-6;
 
   //use to host the result
   double *x = (double *)malloc(n * sizeof(double));
@@ -131,7 +131,9 @@ void problem(int n) {
   for (i = 0; i < numit; ++i)
       discreps[i] = -1234;
 
+  printf("Matrix A:\n");
   printMatrix(a, n, n);
+  printf("Matrix Y:\n");
   printMatrix(y, n, 1);
   //double *y_t = transpose(y, n, 1);
   //printMatrix(y_t, 1, n);
@@ -143,15 +145,16 @@ void problem(int n) {
   printMatrix(x, n, 1);
   printf("Total Round: %d. Discreps: \n", niter);
   //printMatrix(discreps, niter, 1);
+  printf("\n\n");
 
 
 }
 int main() {
   problem(3);
-  getchar();
+  //getchar();
   problem(4);
-  getchar();
+  //getchar();
   problem(6);
-  getchar();
+  //getchar();
   problem(10);
 }
