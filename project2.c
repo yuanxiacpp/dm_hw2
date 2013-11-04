@@ -73,10 +73,17 @@ void dumb_solve(double *a, double *y, int n, double eps,
 		int numit, double *x, int *niter, double *discreps) {
   int i, j;
   *niter = 0;
-  double r = -0.5 / normal(a, n, n);
+  //double r = -0.5 / normal(a, n, n);
   //double r = -0.5;
   while (*niter < numit) {
     double *x_gradient = gradient(a, x, y, n);
+    
+    //calculate r to generate next x
+    double r = normal(x_gradient, n, 1);
+    r = r * r * (-0.5);
+    double tmp = normal(multiply(a, x_gradient, n, n, 1), n, 1);
+    r = r / (tmp * tmp);
+    
     
     for (i = 0; i < n; i++)
       x_gradient[i] *= r;
@@ -88,7 +95,7 @@ void dumb_solve(double *a, double *y, int n, double eps,
       break;
     *niter += 1;
 
-    printf("Round %d\n", *niter);
+    printf("Round %d: r = %lf\n", *niter, r);
     //printMatrix(x, n, 1);
     //getchar();
   }
@@ -109,7 +116,7 @@ void problem(int n) {
   for (i = 0; i < n; ++i)
     y[i] = 1.0;
 
-  int numit = 1000000;
+  int numit = 1000;
   double eps = 10E-6;
 
   //use to host the result
@@ -143,6 +150,8 @@ int main() {
   problem(3);
   getchar();
   problem(4);
+  getchar();
+  problem(6);
   getchar();
   problem(10);
 }
